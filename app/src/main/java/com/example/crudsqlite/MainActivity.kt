@@ -16,20 +16,27 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         boton_alta.setOnClickListener{
-            val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
-            val bd = admin.writableDatabase
-            val registro = ContentValues()
-            registro.put("codigo", et_codigo.text.toString())
-            registro.put("nombre", et_nombre.text.toString())
-            registro.put("cantante", et_cantante.text.toString())
-            bd.insert("discos",null,registro)
-            bd.close()
 
-            et_codigo.setText("")
-            et_nombre.setText("")
-            et_cantante.setText("")
+            if(et_codigo.text.isNotEmpty() && et_nombre.text.isNotEmpty() && et_cantante.text.isNotEmpty()){
+                val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
+                val bd = admin.writableDatabase
 
-            Toast.makeText(this, "Disco añadido",Toast.LENGTH_SHORT).show()
+                val registro = ContentValues()
+                registro.put("codigo", et_codigo.text.toString())
+                registro.put("nombre", et_nombre.text.toString())
+                registro.put("cantante", et_cantante.text.toString())
+                bd.insert("discos",null,registro)
+                bd.close()
+
+                et_codigo.setText("")
+                et_nombre.setText("")
+                et_cantante.setText("")
+
+                Toast.makeText(this, "Disco añadido",Toast.LENGTH_SHORT).show()
+            }else{
+                Toast.makeText(this, "Introduce todos los campos!",Toast.LENGTH_SHORT).show()
+            }
+
         }
 
         boton_consulta.setOnClickListener{

@@ -16,12 +16,12 @@ class MostrarActivity : AppCompatActivity() {
         val fila = bd.rawQuery("select codigo,nombre,cantante from discos",null)
 
         val items = mutableListOf<String>()
-        with(fila) {
-            while (moveToNext()) {
-                val item = "${fila.getString(0)}, ${fila.getString(1)} \n ${fila.getString(2)}"
-                items.add(item)
-            }
+
+        while (fila.moveToNext()) {
+            val item = "${fila.getString(0)}, ${fila.getString(1)} \n ${fila.getString(2)}"
+            items.add(item)
         }
+
         bd.close()
 
         val adapter = ArrayAdapter(this,android.R.layout.simple_list_item_1, items)

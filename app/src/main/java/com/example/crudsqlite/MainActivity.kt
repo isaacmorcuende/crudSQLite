@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
         boton_alta.setOnClickListener{
 
             if(et_codigo.text.isNotEmpty() && et_nombre.text.isNotEmpty() && et_cantante.text.isNotEmpty()){
+
                 val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
                 val bd = admin.writableDatabase
 
@@ -25,6 +26,8 @@ class MainActivity : AppCompatActivity() {
                 registro.put("codigo", et_codigo.text.toString())
                 registro.put("nombre", et_nombre.text.toString())
                 registro.put("cantante", et_cantante.text.toString())
+
+
                 bd.insert("discos",null,registro)
                 bd.close()
 
@@ -40,8 +43,11 @@ class MainActivity : AppCompatActivity() {
         }
 
         boton_consulta.setOnClickListener{
+
             val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
             val bd = admin.readableDatabase
+
+
             val fila = bd.rawQuery("select nombre,cantante from discos where codigo=${et_codigo.text.toString()}",null)
 
             if(fila.moveToFirst()){

@@ -43,66 +43,77 @@ class MainActivity : AppCompatActivity() {
         }
 
         boton_consulta.setOnClickListener{
+            if(et_codigo.text.isNotEmpty()) {
+                val admin = AdminSQLiteOpenHelper(this, "administracion", null, 1)
+                val bd = admin.readableDatabase
 
-            val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
-            val bd = admin.readableDatabase
 
+                val fila = bd.rawQuery("select nombre,cantante from discos where codigo=${et_codigo.text.toString()}", null)
 
-            val fila = bd.rawQuery("select nombre,cantante from discos where codigo=${et_codigo.text.toString()}",null)
-
-            if(fila.moveToFirst()){
-                et_nombre.setText(fila.getString(0))
-                et_cantante.setText(fila.getString(1))
+                if (fila.moveToFirst()) {
+                    et_nombre.setText(fila.getString(0))
+                    et_cantante.setText(fila.getString(1))
+                } else {
+                    Toast.makeText(this, "No existe ningún disco con ese código", Toast.LENGTH_SHORT).show()
+                    et_nombre.setText("")
+                    et_cantante.setText("")
+                }
+                bd.close()
             }else{
-                Toast.makeText(this, "No existe ningún disco con ese código",Toast.LENGTH_SHORT).show()
-                et_nombre.setText("")
-                et_cantante.setText("")
+                Toast.makeText(this, "Introduce un código!",Toast.LENGTH_SHORT).show()
             }
-            bd.close()
         }
 
         boton_baja.setOnClickListener{
-            val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
-            val bd = admin.writableDatabase
+            if(et_codigo.text.isNotEmpty()) {
+                val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
+                val bd = admin.writableDatabase
 
-            val fila = bd.rawQuery("select nombre,cantante from discos where codigo=${et_codigo.text.toString()}",null)
+                val fila = bd.rawQuery("select nombre,cantante from discos where codigo=${et_codigo.text.toString()}",null)
 
-            if(fila.moveToFirst()){
-                AlertDialog.Builder(this).apply {
-                    setTitle("Eliminar disco")
-                    setMessage("¿Estás seguro de que quieres eliminar ${fila.getString(0)} de ${fila.getString(1)}?")
-                    setPositiveButton("Si") { _: DialogInterface, _: Int ->
-                        val cant = bd.delete("discos", "codigo=${et_codigo.text.toString()}",null)
-                        bd.close()
-                        if(cant==1){
-                            Toast.makeText(this@MainActivity, "El disco se ha borrado con éxito", Toast.LENGTH_SHORT).show()
-                            et_codigo.setText("")
+                if(fila.moveToFirst()){
+                    AlertDialog.Builder(this).apply {
+                        setTitle("Eliminar disco")
+                        setMessage("¿Estás seguro de que quieres eliminar ${fila.getString(0)} de ${fila.getString(1)}?")
+                        setPositiveButton("Si") { _: DialogInterface, _: Int ->
+                            val cant = bd.delete("discos", "codigo=${et_codigo.text.toString()}",null)
+                            bd.close()
+                            if(cant==1){
+                                Toast.makeText(this@MainActivity, "El disco se ha borrado con éxito", Toast.LENGTH_SHORT).show()
+                                et_codigo.setText("")
+                            }
                         }
-                    }
-                    setNegativeButton("No"){ _: DialogInterface, _: Int ->
-                        bd.close()
-                    }
-                }.show()
+                        setNegativeButton("No"){ _: DialogInterface, _: Int ->
+                            bd.close()
+                        }
+                    }.show()
+                }else{
+                    Toast.makeText(this, "No existe ningún disco con ese código",Toast.LENGTH_SHORT).show()
+                }
             }else{
-                Toast.makeText(this, "No existe ningún disco con ese código",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Introduce un código!",Toast.LENGTH_SHORT).show()
             }
         }
 
         boton_modificar.setOnClickListener {
-            val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
-            val bd = admin.writableDatabase
+            if(et_codigo.text.isNotEmpty() && et_nombre.text.isNotEmpty() && et_cantante.text.isNotEmpty()) {
+                val admin = AdminSQLiteOpenHelper(this,"administracion",null,1)
+                val bd = admin.writableDatabase
 
-            val registro = ContentValues()
-            registro.put("nombre", et_nombre.text.toString())
-            registro.put("cantante", et_cantante.text.toString())
+                val registro = ContentValues()
+                registro.put("nombre", et_nombre.text.toString())
+                registro.put("cantante", et_cantante.text.toString())
 
-            val cant = bd.update("discos",registro,"codigo=${et_codigo.text}",null)
-            bd.close()
+                val cant = bd.update("discos",registro,"codigo=${et_codigo.text}",null)
+                bd.close()
 
-            if(cant==1){
-                Toast.makeText(this, "Se han modificado los datos",Toast.LENGTH_SHORT).show()
+                if(cant==1){
+                    Toast.makeText(this, "Se han modificado los datos",Toast.LENGTH_SHORT).show()
+                }else{
+                    Toast.makeText(this, "No existe ningún disco con ese código",Toast.LENGTH_SHORT).show()
+                }
             }else{
-                Toast.makeText(this, "No existe ningún disco con ese código",Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Introduce todos los campos!",Toast.LENGTH_SHORT).show()
             }
         }
 
